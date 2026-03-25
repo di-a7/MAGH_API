@@ -1,0 +1,29 @@
+# Restaurant Management System
+
+### Models ###
+
+## User
+firstname
+lastname
+email
+phone
+
+## category
+name
+
+## Food
+name
+price
+category
+
+## Table
+number
+is_avaible
+
+## Order
+User
+total_price
+
+## OrderItem
+order_id
+food_id
