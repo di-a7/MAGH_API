@@ -2,8 +2,9 @@ from django.urls import path, include
 from .views import *
 from rest_framework import routers
 
-router = routers.SimpleRouter()
+router = routers.DefaultRouter()
 router.register('category',CategoryModelViewset, basename = 'category')
+router.register('foods',FoodModelViewset)
 # router.register('category/<id>/',CategoryDetailViewset, basename = 'category_detail')
 
 urlpatterns = [
