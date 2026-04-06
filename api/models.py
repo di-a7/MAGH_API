@@ -25,7 +25,7 @@ class Table(models.Model):
 
 class Order(models.Model):
    status_choice = [
-      ('Complete',"Complete"),
+      ('Complete','Complete'),
       ('Pending','Pending'),
       ('Delivered','Delivered')
    ]

@@ -9,19 +9,23 @@ from rest_framework import status
 # ModelViewset
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 # from rest_framework.pagination import PageNumberPagination
-from .pagination import FoodPagiation, CategoryPagination
+# from .pagination import FoodPagiation, CategoryPagination
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import FoodFilter
+from rest_framework.permissions import IsAuthenticated
+from .permissions import IsAuthenticatedOrReadOnly
 class CategoryModelViewset(ModelViewSet):
    queryset = Category.objects.all()
    serializer_class = CategorySerializer
-   pagination_class = CategoryPagination
+   # pagination_class = CategoryPagination
    filter_backends = [DjangoFilterBackend]
+   permission_classes = [IsAuthenticated]
    filterset_fields = ['name']
    
-   def destroy(self, request,id):
-      category = Category.objects.get(id = id)
+   
+   def destroy(self, request,pk):
+      category = Category.objects.get(pk = pk)
       items = OrderItem.objects.filter(food__category = category).count()
       if items > 0:
          return Response({"detail":"Protected Error: Category can't be deleted. Related to OrderItem"})
@@ -31,9 +35,10 @@ class CategoryModelViewset(ModelViewSet):
 class FoodModelViewset(ModelViewSet):
    queryset = Food.objects.all().select_related('category')
    serializer_class = FoodSerializer
-   pagination_class = FoodPagiation
+   # pagination_class = FoodPagiation
    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
    search_fields = ['name']
+   permission_classes = [IsAuthenticatedOrReadOnly]
    # filterset_fields = ['category']
    filterset_class = FoodFilter
 
