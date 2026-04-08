@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import *
-from .serializer import CategorySerializer, FoodSerializer
+from .serializer import *
 from rest_framework import status
 # Create your views here.
 
@@ -15,7 +15,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .filters import FoodFilter
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsAuthenticatedOrReadOnly
-class CategoryModelViewset(ModelViewSet):
+class CategoryModelViewset(ReadOnlyModelViewSet):
    queryset = Category.objects.all()
    serializer_class = CategorySerializer
    # pagination_class = CategoryPagination
@@ -32,7 +32,7 @@ class CategoryModelViewset(ModelViewSet):
       category.delete()
       return Response({"detail":"Data has be deleted."})
 
-class FoodModelViewset(ModelViewSet):
+class FoodModelViewset(ReadOnlyModelViewSet):
    queryset = Food.objects.all().select_related('category')
    serializer_class = FoodSerializer
    # pagination_class = FoodPagiation
@@ -41,6 +41,16 @@ class FoodModelViewset(ModelViewSet):
    permission_classes = [IsAuthenticatedOrReadOnly]
    # filterset_fields = ['category']
    filterset_class = FoodFilter
+
+class OrderModelViewset(ModelViewSet):
+   queryset = Order.objects.all().prefetch_related('items')
+   serializer_class = OrderSerializer
+   permission_classes = [IsAuthenticatedOrReadOnly]
+   filter_backends = [DjangoFilterBackend]
+   filterset_fields = ['status','user__username']
+   
+
+
 
 # Viewset
 # from rest_framework.viewsets import ViewSet

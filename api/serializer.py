@@ -21,6 +21,45 @@ class FoodSerializer(serializers.ModelSerializer):
    
    # with 10% discount, method, field, fields include
 
+class OrderItemSerializer(serializers.ModelSerializer):
+   food = serializers.StringRelatedField()
+   food_id = serializers.PrimaryKeyRelatedField(queryset = Food.objects.all())
+   class Meta:
+      model = OrderItem
+      fields = ['food_id','food']
+
+class OrderSerializer(serializers.ModelSerializer):
+   user = serializers.HiddenField(default = serializers.CurrentUserDefault())
+   items = OrderItemSerializer(many=True)
+   status = serializers.CharField(read_only=True)
+   total_price = serializers.IntegerField(read_only=True)
+   class Meta:
+      model = Order
+      fields = ['id','user','total_price','status','items']
+   
+   def create(self, validated_data):
+      items = validated_data.pop('items')
+      total = 0
+      for i in items:
+         food = Food.objects.get(id = i.get('food_id').id)
+         total += food.price
+      order = Order.objects.create(user = validated_data.get('user'), total_price = total)
+      
+      for i in items:
+         OrderItem.objects.create(order = order, food = i.get('food_id'))
+      
+      return order
+
+# items = [
+#    {
+#    "food": 16
+#    },
+# {
+#    "food": 17
+#    }
+# ]
+# }
+
 
 # class CategorySerializer(serializers.Serializer):
 #    id = serializers.IntegerField(read_only=True)

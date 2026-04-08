@@ -5,6 +5,7 @@ from rest_framework import routers
 router = routers.DefaultRouter()
 router.register('category',CategoryModelViewset, basename = 'category')
 router.register('foods',FoodModelViewset)
+router.register('orders',OrderModelViewset)
 # router.register('category/<id>/',CategoryDetailViewset, basename = 'category_detail')
 
 urlpatterns = [
